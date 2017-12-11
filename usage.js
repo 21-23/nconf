@@ -30,7 +30,10 @@ var multiple = new nconf.Provider({
 // Setup nconf to use the 'file' store and set a couple of values;
 //
 nconf.use('file', { file: path.join(__dirname, 'config.json') });
-nconf.use('watch', { file: path.join(__dirname, 'config-watch.json'), onChange: function () { console.dir(nconf.get('database')); } });
+nconf.use('watch', { file: path.join(__dirname, 'config-watch.json'), onChange: function (newStore, oldStore) {
+  console.dir(newStore);
+  console.dir(oldStore);
+} });
 nconf.set('database:host', '127.0.0.1');
 nconf.set('database:port', 5984);
 
