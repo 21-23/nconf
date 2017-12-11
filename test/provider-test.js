@@ -204,6 +204,59 @@ vows.describe('nconf/provider').addBatch({
 }).addBatch({
   "When using nconf": {
     "an instance of 'nconf.Provider'": {
+      "the .watch() method": {
+        "with a single filepath": assertProvider(function (provider) {
+          provider.watch(helpers.fixture('store.json'));
+
+          assert.isObject(provider.stores.watch);
+
+          provider.stores.watch.remove();
+        }),
+        "with a name and a filepath": assertProvider(function (provider) {
+          provider.watch('custom', helpers.fixture('store.json'));
+
+          assert.isObject(provider.stores.custom);
+
+          provider.stores.custom.remove();
+        }),
+        "with a single object": assertProvider(function (provider) {
+          provider.watch({ file: helpers.fixture('store.json') });
+
+          assert.isObject(provider.stores.watch);
+          assert.equal(provider.stores.watch.file, helpers.fixture('store.json'));
+
+          provider.stores.watch.remove();
+        }),
+        "with a name and an object": assertProvider(function (provider) {
+          provider.watch('custom', { file: helpers.fixture('store.json') });
+
+          assert.isObject(provider.stores.custom);
+          assert.equal(provider.stores.custom.file, helpers.fixture('store.json'));
+
+          provider.stores.custom.remove();
+        }),
+        "with an object and callback": assertProvider(function (provider) {
+          provider.watch({ file: helpers.fixture('store.json') }, function () {});
+
+          assert.isObject(provider.stores.watch);
+          assert.equal(provider.stores.watch.file, helpers.fixture('store.json'));
+
+          provider.stores.watch.remove();
+        }),
+        "with a single filepath and callback": assertProvider(function (provider) {
+          provider.watch(helpers.fixture('store.json'), function () {});
+
+          assert.isObject(provider.stores.watch);
+          assert.equal(provider.stores.watch.file, helpers.fixture('store.json'));
+
+          provider.stores.watch.remove();
+        })
+      }
+    }
+  }
+}).addBatch({
+  "When using nconf": {
+    "an instance of 'nconf.Provider'": {
       "the any() method": {
         topic: new nconf.Provider({
           type: 'literal',
