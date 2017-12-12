@@ -66,8 +66,9 @@ Configuration management can get complicated very quickly for even trivial appli
   1. **nconf.argv(options)** Loads `process.argv` using yargs. If `options` is supplied it is passed along to yargs.
   2. **nconf.env(options)** Loads `process.env` into the hierarchy.
   3. **nconf.file(options)** Loads the configuration data at options.file into the hierarchy.
-  4. **nconf.defaults(options)** Loads the data in options.store into the hierarchy.
-  5. **nconf.overrides(options)** Loads the data in options.store into the hierarchy.
+  4. **nconf.watch(options)** Loads the configuration data at options.file into the hierarchy and watches changes on it.
+  5. **nconf.defaults(options)** Loads the data in options.store into the hierarchy.
+  6. **nconf.overrides(options)** Loads the data in options.store into the hierarchy.
 
 A sane default for this could be:
 
@@ -109,7 +110,12 @@ A sane default for this could be:
   });
 
   //
-  // 5. Any default values
+  // 5. Values in `config.json`
+  //
+  nconf.watch('/path/to/watched/config.json', function() { /* config changes */ });
+
+  //
+  // 6. Any default values
   //
   nconf.defaults({
     'if nothing else': 'use this value'
@@ -411,6 +417,21 @@ This will encrypt each key using [`crypto.createCipher`](https://nodejs.org/api/
   },
 }
 ```
+
+### Watch
+Similar to File, but observes changes in a given file. Once config file is changed - changes are picked up automatically and callback (if provided) is called. Comparing to File, Watch **does not** support `save`, `dir`, `secure`, `search`.
+
+``` js
+  nconf.watch('path/to/your/config.json');
+  nconf.watch('path/to/your/another/config.json', function() { });
+  // add multiple files, hierarchically. notice the unique key for each file
+  nconf.watch('user', 'path/to/your/user.json');
+  nconf.watch('global', { file: 'path/to/your/global.json' });
+```
+
+The file store is also extensible for multiple file formats, defaulting to `JSON`. To use a custom format, simply pass a format object to the `.use()` method. This object must have `.parse()` and `.stringify()` methods just like the native `JSON` object.
+
+If the file does not exist at the provided path, the store will simply be empty.
 
 ### Redis
 There is a separate Redis-based store available through [nconf-redis][0]. To install and use this store simply:
